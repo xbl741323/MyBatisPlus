@@ -131,7 +131,45 @@ class StudyMybatisPlusApplicationTests {
 }
 ```
 ### 思考问题
-1、SQL谁帮我们写的？
+#### 1、SQL谁帮我们写的？
 答：MyBatisPlus
-2、方法哪里来的？
+#### 2、方法哪里来的？
 答：MyBatisPlus 都写好了
+
+### 特性
+#### 无侵入
+只做增强不做改变，引入它不会对现有工程产生影响，如丝般顺滑
+
+#### 损耗小
+启动即会自动注入CURD，性能基本无损耗，直接面向对象操作，BaseMapper
+
+#### 强大的CRUD操作
+内置通用Mapper、通用Service，仅仅通过少量配置便可实现单表大部分CRUD操作，更有强大的条件构造器，满足各类使用需求，简单的CRUD操作，可以直接用它
+
+#### 支持Lambda形式调用
+通过Lambda表达式，方便的编写各类查询条件，无需担心字段写错
+
+#### 支持主键自动生成
+支持多达4种主键策略（内含分布式唯一ID生成器-Sequence），可自由配置，完美解决主键问题
+
+#### 支持ActiveRecord模式
+支持ActiveRecord形式调用，实体类只需继承Model类即可进行强大的CRUD操作
+
+#### 支持自定义全局通用操作
+支持全局通用方法注入（Write once,use anywhere）
+
+#### 内置代码生成器
+采用代码或者Maven插件可快速生成Mapper、Model、Service、Controller层代码，支持模板引擎，更有超多自定义配置等你来使用（自动帮你生成代码）
+
+#### 内置分页插件
+基于MyBatis物理分页，开发者无须担心具体操作，配置好插件后，写分页等同于普通List查询
+
+#### 分页插件支持多种数据库
+支持MySQL、MariaDB、Oracle、DB2、H2、HSQL、SQLite、Postgre、SQLServer等多种婆数据库
+
+#### 内置性能分析插件
+可输出sql语句以及其执行时间，建议开发测试启用该功能
+
+#### 内置全局拦截插件
+提供全表delete、update等操作智能分析阻断，也可以自定义拦截规则，预防误操作
+
