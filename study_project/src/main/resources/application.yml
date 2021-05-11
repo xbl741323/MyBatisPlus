@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    name: study_db
+    url: jdbc:mysql://localhost:3306/study_db?useUnicode=true&useSSL=FALSE&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: xbl237413
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 8888
+
