@@ -130,3 +130,8 @@ class StudyMybatisPlusApplicationTests {
 
 }
 ```
+### 思考问题
+1、SQL谁帮我们写的？
+答：MyBatisPlus
+2、方法哪里来的？
+答：MyBatisPlus 都写好了
