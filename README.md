@@ -198,3 +198,10 @@ JDBC Connection [HikariProxyConnection@1512273713 wrapping com.mysql.cj.jdbc.Con
 <==      Total: 5
 ```
 这个日志输出很方便开发者查询数据库操作信息，很好用！
+
+### CRUD扩展
+1、insert
+
+### 主键生成策略
+分布式系统唯一id生成：https://www.cnblogs.com/haoxinyue/p/5208136.html
+
