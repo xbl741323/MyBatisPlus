@@ -240,4 +240,19 @@ snowflake是Twitter开源的分布式ID生成算法，结果是一个long型的I
     UUID(4); // 全局唯一id uuid
 ```
 
-#### 二、UPDATE
+#### 二、UPDATE(更新操作)
+
+```
+//测试更新（update）
+    @Test
+    public void testUpdate(){
+        User user = new User();
+        // 可以通过条件自动拼接动态sql
+        user.setId((long) 45);
+        user.setName("e手动");
+        user.setAge(18);
+        // 注意：updateById 的参数是一个对象！
+        int result = userMapper.updateById(user);
+        System.out.println(result);
+    }
+```
