@@ -265,4 +265,4 @@ JDBC Connection [HikariProxyConnection@447477005 wrapping com.mysql.cj.jdbc.Conn
 ==> Parameters: e手动(String), 18(Integer), 45(Long)
 <==    Updates: 1
 ```
-
+所有的SQL都是自动帮你动态配置的！使用起来很方便！
