@@ -180,3 +180,20 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 ```
+运行程序后控制台输出日志如下：
+```
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@7c447c76] was not registered for synchronization because synchronization is not active
+2021-05-12 16:18:33.472  INFO 23164 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Starting...
+2021-05-12 16:18:33.842  INFO 23164 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Start completed.
+JDBC Connection [HikariProxyConnection@1512273713 wrapping com.mysql.cj.jdbc.ConnectionImpl@7d2998d8] will not be managed by Spring
+==>  Preparing: SELECT id,name,age,email FROM user 
+==> Parameters: 
+<==    Columns: id, name, age, email
+<==        Row: 1, Jone, 18, test1@baomidou.com
+<==        Row: 2, Jack, 20, test2@baomidou.com
+<==        Row: 3, Tom, 28, test3@baomidou.com
+<==        Row: 4, Sandy, 21, test4@baomidou.com
+<==        Row: 5, Billie, 24, test5@baomidou.com
+<==      Total: 5
+```
