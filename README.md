@@ -240,4 +240,4 @@ snowflake是Twitter开源的分布式ID生成算法，结果是一个long型的I
     UUID(4); // 全局唯一id uuid
 ```
 
-#### 二、
+#### 二、UPDATE
