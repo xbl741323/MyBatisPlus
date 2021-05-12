@@ -256,3 +256,13 @@ snowflake是Twitter开源的分布式ID生成算法，结果是一个long型的I
         System.out.println(result);
     }
 ```
+日志输出如下：
+```
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@f951a7f] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@447477005 wrapping com.mysql.cj.jdbc.ConnectionImpl@22a0d4ea] will not be managed by Spring
+==>  Preparing: UPDATE user SET name=?, age=? WHERE id=? 
+==> Parameters: e手动(String), 18(Integer), 45(Long)
+<==    Updates: 1
+```
+
