@@ -272,3 +272,18 @@ JDBC Connection [HikariProxyConnection@447477005 wrapping com.mysql.cj.jdbc.Conn
 创建时间、修改时间！这些操作一般都是自动化完成的，我们不希望手动更新！
 
 阿里巴巴开发手册要求：所有的数据库表：gmt_create、gmt_modified几乎所有的表都要配置上！而且需要自动化！
+
+#### 1、数据库级别（不建议这么操作）
+直接在数据库中设置默认值和更新操作
+#### 2、代码级别
+1、添加对应时间字段（不要设置默认值和更新操作）
+2、实体类字段属性上添加TableField注解
+```
+// 字段添加填充内容
+    @TableField(fill = FieldFill.INSERT)
+    private Date createTime;
+
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Date updateTime;
+```
+3、编写处理器处理相应注解
