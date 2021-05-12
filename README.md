@@ -269,6 +269,6 @@ JDBC Connection [HikariProxyConnection@447477005 wrapping com.mysql.cj.jdbc.Conn
 
 #### 自动填充
 
-创建时间、修改时间！这些个操作一般都是自动化完成的，我们不希望手动更新！
+创建时间、修改时间！这些操作一般都是自动化完成的，我们不希望手动更新！
 
 阿里巴巴开发手册要求：所有的数据库表：gmt_create、gmt_modified几乎所有的表都要配置上！而且需要自动化！
