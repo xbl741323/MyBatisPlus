@@ -213,3 +213,4 @@ JDBC Connection [HikariProxyConnection@1512273713 wrapping com.mysql.cj.jdbc.Con
 snowflake是Twitter开源的分布式ID生成算法，结果是一个long型的ID。其核心思想是：使用41bit作为毫秒数，10bit作为机器的ID（5个bit是数据中心，5个bit的机器ID），12bit作为毫秒内的流水号（意味着每个节点在每毫秒可以产生 4096 个 ID），最后还有一个符号位，永远是0。具体实现的代码可以参看https://github.com/twitter/snowflake
 雪花算法支持的TPS可以达到419万左右（2^22*1000）。
 雪花算法在工程实现上有单机版本和分布式版本。单机版本如下，分布式版本可以参看美团leaf算法：https://github.com/Meituan-Dianping/Leaf
+可以保证几乎全球唯一了！
