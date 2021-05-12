@@ -204,7 +204,7 @@ JDBC Connection [HikariProxyConnection@1512273713 wrapping com.mysql.cj.jdbc.Con
 
 
 ### CRUD扩展
-1、INSERT
+#### 一、INSERT
 
 ### 主键生成策略
 分布式系统唯一id生成：https://www.cnblogs.com/haoxinyue/p/5208136.html
@@ -239,3 +239,5 @@ snowflake是Twitter开源的分布式ID生成算法，结果是一个long型的I
     @Deprecated
     UUID(4); // 全局唯一id uuid
 ```
+
+#### 二、
