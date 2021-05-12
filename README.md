@@ -214,3 +214,11 @@ snowflake是Twitter开源的分布式ID生成算法，结果是一个long型的I
 雪花算法支持的TPS可以达到419万左右（2^22*1000）。
 雪花算法在工程实现上有单机版本和分布式版本。单机版本如下，分布式版本可以参看美团leaf算法：https://github.com/Meituan-Dianping/Leaf
 可以保证几乎全球唯一了！
+
+#### 主键自增：
+1、实体类字段上 加上注解@TableId(type = IdType.AUTO)（type的值有多种选择）
+
+2、数据库中的对应主键字段一定要是自增的！
+
+3、测试插入数据即可！
+
