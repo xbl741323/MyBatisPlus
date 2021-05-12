@@ -204,7 +204,7 @@ JDBC Connection [HikariProxyConnection@1512273713 wrapping com.mysql.cj.jdbc.Con
 
 
 ### CRUD扩展
-#### 一、INSERT
+#### 一、INSERT(插入操作)
 
 ### 主键生成策略
 分布式系统唯一id生成：https://www.cnblogs.com/haoxinyue/p/5208136.html
