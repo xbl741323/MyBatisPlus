@@ -173,3 +173,10 @@ class StudyMybatisPlusApplicationTests {
 #### 12、内置全局拦截插件
 提供全表delete、update等操作智能分析阻断，也可以自定义拦截规则，预防误操作
 
+### 配置日志
+在application.yml文件中加入以下代码：（log-impl后面的值可用得有很多，这里只用了控制台输出）
+```
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+```
