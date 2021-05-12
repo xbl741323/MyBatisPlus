@@ -286,7 +286,7 @@ JDBC Connection [HikariProxyConnection@447477005 wrapping com.mysql.cj.jdbc.Conn
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 ```
-3、编写处理器处理相应注解即可！
+3、编写处理器处理相应注解
 ```
 package com.xu.handler;
 
@@ -317,3 +317,4 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     }
 }
 ```
+4、测试插入、测试更新、观察时间即可！
