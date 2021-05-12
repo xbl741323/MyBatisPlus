@@ -173,6 +173,8 @@ class StudyMybatisPlusApplicationTests {
 #### 12、内置全局拦截插件
 提供全表delete、update等操作智能分析阻断，也可以自定义拦截规则，预防误操作
 
+
+
 ### 配置日志
 在application.yml文件中加入以下代码：（log-impl后面的值可用得有很多，这里只用了控制台输出）
 ```
@@ -199,8 +201,10 @@ JDBC Connection [HikariProxyConnection@1512273713 wrapping com.mysql.cj.jdbc.Con
 ```
 这个日志输出很方便开发者查询数据库操作信息，很好用！
 
+
+
 ### CRUD扩展
-1、insert
+1、INSERT
 
 ### 主键生成策略
 分布式系统唯一id生成：https://www.cnblogs.com/haoxinyue/p/5208136.html
