@@ -222,3 +222,20 @@ snowflake是Twitter开源的分布式ID生成算法，结果是一个long型的I
 
 3、测试插入数据即可！
 
+#### 其他type源码解释
+```
+    AUTO(0), // 数据库id自增
+    NONE(1), // 未设置主键
+    INPUT(2), // 手动输入
+    ASSIGN_ID(3),
+    ASSIGN_UUID(4),
+    /** @deprecated */
+    @Deprecated
+    ID_WORKER(3), // 默认的全局唯一id
+    /** @deprecated */
+    @Deprecated
+    ID_WORKER_STR(3), // ID_WORKER 字符串表示法
+    /** @deprecated */
+    @Deprecated
+    UUID(4); // 全局唯一id uuid
+```
