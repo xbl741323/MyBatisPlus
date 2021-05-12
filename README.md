@@ -197,3 +197,4 @@ JDBC Connection [HikariProxyConnection@1512273713 wrapping com.mysql.cj.jdbc.Con
 <==        Row: 5, Billie, 24, test5@baomidou.com
 <==      Total: 5
 ```
+这个日志输出很方便开发者查询数据库操作信息，很好用！
