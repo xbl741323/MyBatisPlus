@@ -451,3 +451,5 @@ JDBC Connection [HikariProxyConnection@1778994610 wrapping com.mysql.cj.jdbc.Con
 <==    Updates: 0 //注意这里并没有执行更新操作（乐观锁阻止了本次操作）
 Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@fab35b1]
 ```
+
+#### 三、SELECT(查询操作)
