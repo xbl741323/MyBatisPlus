@@ -427,7 +427,8 @@ Closing non transactional SqlSession [org.apache.ibatis.session.defaults.Default
         user2.setName("小白22333");
         user2.setAge(10);
         userMapper.updateById(user2);
-
+        
+        // 可以用自旋锁来多次尝试提交
         userMapper.updateById(user); // 如果没有乐观锁就会覆盖插队线程的值
     }
 ```
