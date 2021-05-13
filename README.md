@@ -551,3 +551,4 @@ JDBC Connection [HikariProxyConnection@1407986024 wrapping com.mysql.cj.jdbc.Con
 物理删除：从数据库中直接移除
 逻辑删除：在数据库中没有被移除，而是通过一个变量来让它失效！deleted=0 => deleted=1
 ```
+管理员可以查看被删除的记录，防止数据的丢失，相当于回收站！
