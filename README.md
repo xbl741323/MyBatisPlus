@@ -607,3 +607,23 @@ JDBC Connection [HikariProxyConnection@512407823 wrapping com.mysql.cj.jdbc.Conn
 ==> Parameters: e3(String)
 <==    Updates: 1 // 逻辑删除本质进行的是更新操作
 ```
+之后进行查询被逻辑删除的数据
+```
+ // 测试查询
+    @Test
+    public void testSelectById(){
+        User user = userMapper.selectById(4);
+        System.out.println(user);
+    }
+```
+输出日志如下：
+```
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@61dde151] was not registered for synchronization because synchronization is not active
+2021-05-13 14:44:10.735  INFO 25160 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Starting...
+2021-05-13 14:44:11.005  INFO 25160 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Start completed.
+JDBC Connection [HikariProxyConnection@278536229 wrapping com.mysql.cj.jdbc.ConnectionImpl@2241f05b] will not be managed by Spring
+==>  Preparing: SELECT id,name,age,email,version,deleted,create_time,update_time FROM user WHERE id=? AND deleted=0
+==> Parameters: 4(Integer)
+<==      Total: 0  // 没有查询到结果
+```
