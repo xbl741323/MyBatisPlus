@@ -494,4 +494,39 @@ Closing non transactional SqlSession [org.apache.ibatis.session.defaults.Default
         return interceptor;
     }
 2、直接使用
+// 测试分页查询
+    @Test
+    public void testPageSelect(){
+        // current:当前页 size:页面大小
+        Page<User> page = new Page<>(1,10);
+        userMapper.selectPage(page,null);
+        System.out.println(page.getRecords());
+    }
+```
+测试结果如下：
+```
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2776015d] was not registered for synchronization because synchronization is not active
+2021-05-13 11:06:49.752  INFO 7840 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Starting...
+2021-05-13 11:06:49.962  INFO 7840 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Start completed.
+JDBC Connection [HikariProxyConnection@1407986024 wrapping com.mysql.cj.jdbc.ConnectionImpl@58ff8d79] will not be managed by Spring
+==>  Preparing: SELECT COUNT(*) FROM user
+==> Parameters: 
+<==    Columns: COUNT(*)
+<==        Row: 15
+<==      Total: 1
+==>  Preparing: SELECT id,name,age,email,version,create_time,update_time FROM user LIMIT ?
+==> Parameters: 10(Long)
+<==    Columns: id, name, age, email, version, create_time, update_time
+<==        Row: 1, Jone, 18, test1@baomidou.com, 1, null, null
+<==        Row: 2, Jack, 20, test2@baomidou.com, 1, null, null
+<==        Row: 3, Tom, 28, test3@baomidou.com, 1, null, null
+<==        Row: 4, Sandy, 21, test4@baomidou.com, 1, null, null
+<==        Row: 5, Billie, 24, test5@baomidou.com, 1, null, null
+<==        Row: 12, 2, 23, 123@323.com, 1, null, null
+<==        Row: 23, e, 23, 121@12.com, 1, null, null
+<==        Row: 42, e, 24, 14s.com, 1, null, null
+<==        Row: 45, 小白22333, 10, 14s.com, 3, null, 2021-05-13 10:10:36
+<==        Row: 46, e, 14, 14s.com, 1, null, null
+<==      Total: 10
 ```
