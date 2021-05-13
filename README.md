@@ -569,3 +569,41 @@ mybatis-plus:
       logic-delete-value: 1 # 逻辑已删除值(默认为 1)
       logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
 ```
+4. 测试一下删除！
+```
+ // 测试删除
+    @Test
+    public void testDelete(){
+        userMapper.deleteById(4); //根据id删除单个数据
+        userMapper.deleteBatchIds(Arrays.asList(1,3)); //根据id删除多个数据
+
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("name","e3");
+        userMapper.deleteByMap(map); // 按条件删除数据
+    }
+```
+输出日志如下：
+```
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5b275174] was not registered for synchronization because synchronization is not active
+2021-05-13 14:38:14.714  INFO 20120 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Starting...
+2021-05-13 14:38:14.955  INFO 20120 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Start completed.
+JDBC Connection [HikariProxyConnection@1825903149 wrapping com.mysql.cj.jdbc.ConnectionImpl@2c7a8af2] will not be managed by Spring
+==>  Preparing: UPDATE user SET deleted=1 WHERE id=? AND deleted=0
+==> Parameters: 4(Integer)
+<==    Updates: 1 // 逻辑删除本质进行的是更新操作
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5b275174]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2b2f5fcf] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1687702287 wrapping com.mysql.cj.jdbc.ConnectionImpl@2c7a8af2] will not be managed by Spring
+==>  Preparing: UPDATE user SET deleted=1 WHERE id IN ( ? , ? ) AND deleted=0
+==> Parameters: 1(Integer), 3(Integer)
+<==    Updates: 0 // 逻辑删除本质进行的是更新操作
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2b2f5fcf]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@53ec2968] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@512407823 wrapping com.mysql.cj.jdbc.ConnectionImpl@2c7a8af2] will not be managed by Spring
+==>  Preparing: UPDATE user SET deleted=1 WHERE name = ? AND deleted=0
+==> Parameters: e3(String)
+<==    Updates: 1 // 逻辑删除本质进行的是更新操作
+```
