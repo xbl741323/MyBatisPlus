@@ -631,8 +631,7 @@ JDBC Connection [HikariProxyConnection@278536229 wrapping com.mysql.cj.jdbc.Conn
 ### 以上所有的CRUD及其扩展操作，我们都必须精通掌握，会大大提高工作效率！
 
 ### 条件构造器
-十分重要：Wrapper
-+ 我们写一些复杂的sql可以用它来替代！
+十分重要：Wrapper 我们写一些复杂的sql可以用它来替代！
 1. 测试1
 ```
 @Test
