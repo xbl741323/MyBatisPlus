@@ -326,3 +326,14 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 悲观锁：顾名思义十分悲观，它总是认为会出现问题，无论干什么都去上锁！再去操作！
 ```
 这里我们主要讲解乐观锁机制！
+
+##### 乐观锁实现方式：
++ 去除记录时，获取当前version
++ 更新时，带上这个version
++ 执行更新时，set version = newVersion where version = oldVersion
++ 如果version不对，就更新失败
+```
+乐观锁：1、先查询，获得版本号 version = 1
+update user set name = "xu",version = version + 1
+where id = 2 and version  = 1
+```
