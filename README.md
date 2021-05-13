@@ -394,10 +394,21 @@ public class MyBatisPlusConfig {
 测试结果如下：
 ```
 Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@508a65bf] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@401792389 wrapping com.mysql.cj.jdbc.ConnectionImpl@1894e40d] will not be managed by Spring
+==>  Preparing: SELECT id,name,age,email,version,create_time,update_time FROM user WHERE id=?
+==> Parameters: 45(Integer)
+<==    Columns: id, name, age, email, version, create_time, update_time
+<==        Row: 45, e手动, 18, 14s.com, 1, null, 2021-05-12 18:36:18
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@508a65bf]
+Creating a new SqlSession
 SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6ede46f6] was not registered for synchronization because synchronization is not active
 2021-05-13 09:56:58.611  INFO 18852 --- [           main] com.xu.handler.MyMetaObjectHandler       : 开始更新填充......
 JDBC Connection [HikariProxyConnection@278986288 wrapping com.mysql.cj.jdbc.ConnectionImpl@1894e40d] will not be managed by Spring
 ==>  Preparing: UPDATE user SET name=?, age=?, email=?, version=?, update_time=? WHERE id=? AND version=?
 ==> Parameters: 小白(String), 10(Integer), 14s.com(String), 2(Integer), 2021-05-13 09:56:58.611(Timestamp), 45(Long), 1(Integer)
 <==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6ede46f6]
+
 ```
