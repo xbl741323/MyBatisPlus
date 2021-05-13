@@ -530,3 +530,17 @@ JDBC Connection [HikariProxyConnection@1407986024 wrapping com.mysql.cj.jdbc.Con
 <==        Row: 46, e, 14, 14s.com, 1, null, null
 <==      Total: 10
 ```
+
+#### 四、DELETE(删除操作)
+```
+// 测试删除
+    @Test
+    public void testDelete(){
+        userMapper.deleteById(2); // 根据 id 删除单个数据
+        userMapper.deleteBatchIds(Arrays.asList(1,3)); //根据 id 删除多个数据
+
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("name","2");
+        userMapper.deleteByMap(map); // 按条件删除数据
+    }
+```
