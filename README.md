@@ -552,3 +552,20 @@ JDBC Connection [HikariProxyConnection@1407986024 wrapping com.mysql.cj.jdbc.Con
 逻辑删除：在数据库中没有被移除，而是通过一个变量来让它失效！deleted=0 => deleted=1
 ```
 管理员可以查看被删除的记录，防止数据的丢失，相当于回收站！
+
+#### 测试如下：
+1. 在数据库中添加deleted字段 默认值设置为0
+2. 在实体类中添加deleted字段，并添加@TableLogic注解
+```
+ @TableLogic // 逻辑删除注解
+    private Integer deleted;
+```
+3. 配置（@Bean相关配置高版本后已经不需要了）,application.yml中配置如下
+```
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: flag  # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+```
