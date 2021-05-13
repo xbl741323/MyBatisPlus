@@ -544,3 +544,6 @@ JDBC Connection [HikariProxyConnection@1407986024 wrapping com.mysql.cj.jdbc.Con
         userMapper.deleteByMap(map); // 按条件删除数据
     }
 ```
+
+工作中，我们会遇到一些问题，逻辑删除！
+#### 逻辑删除
