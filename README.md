@@ -485,4 +485,13 @@ Closing non transactional SqlSession [org.apache.ibatis.session.defaults.Default
 3. MP其实也内置了分页插件
 ```
 如何使用？步骤如下：
+1、配置分页插件
+@Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor()); // 注册乐观锁插件
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.H2)); // 注册分页插件
+        return interceptor;
+    }
+2、直接使用
 ```
