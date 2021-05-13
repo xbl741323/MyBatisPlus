@@ -342,3 +342,6 @@ where id = 2 and version  = 1
 update user set name = "xu",version = version + 1
 where id = 2 and version  = 1
 ```
+
+##### 测试一下MP的乐观锁插件
+1.给数据库中添加version字段
