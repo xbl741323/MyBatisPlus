@@ -645,6 +645,17 @@ JDBC Connection [HikariProxyConnection@278536229 wrapping com.mysql.cj.jdbc.Conn
         System.out.println(users);
     }
 ```
+2. 测试2
+```
+ @Test
+    public void wrapperSelectByName(){
+        // 根据name查询一条用户
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("name","小白22333");
+        User user = userMapper.selectOne(wrapper);
+        System.out.println(user);
+    }
+```
 
 ### 代码自动生成器（待补充）
 
