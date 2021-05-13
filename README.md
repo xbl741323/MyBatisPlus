@@ -630,10 +630,23 @@ JDBC Connection [HikariProxyConnection@278536229 wrapping com.mysql.cj.jdbc.Conn
 
 ### 以上所有的CRUD及其扩展操作，我们都必须精通掌握，会大大提高工作效率！
 
-### 性能分析插件！
-
 ### 条件构造器
+十分重要：Wrapper
++ 我们写一些复杂的sql可以用它来替代！
+1. 测试1
+```
+@Test
+    public void wrapperSelect(){
+        // 查询name不为空，邮箱不为空，年龄大于等于12的用户
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.isNotNull("name")
+               .isNotNull("email")
+               .ge("age",12);
+        List<User> users = userMapper.selectList(wrapper);
+        System.out.println(users);
+    }
+```
 
-### 代码自动生成器
+### 代码自动生成器（待补充）
 
 
