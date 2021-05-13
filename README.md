@@ -478,3 +478,9 @@ Closing non transactional SqlSession [org.apache.ibatis.session.defaults.Default
         System.out.println(users);
     }
 ```
+#### 分页查询
+分页网站使用的十分之多！
+1. 原始的limit进行分页
+2. pageHelper第三方插件
+3. MP其实也内置了分页插件
+如何使用？
