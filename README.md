@@ -454,15 +454,15 @@ Closing non transactional SqlSession [org.apache.ibatis.session.defaults.Default
 
 #### 三、SELECT(查询操作)
 ```
-// 测试查询
-//    @Test
+    // 测试按照id查询
+    @Test
     public void testSelectById(){
         User user = userMapper.selectById(45);
         System.out.println(user);
     }
 
     // 测试批量查询
-//    @Test
+    @Test
     public void testSelectBatchId(){
         List<User> users = userMapper.selectBatchIds(Arrays.asList(1,2,3));
         System.out.println(users);
