@@ -607,7 +607,7 @@ JDBC Connection [HikariProxyConnection@512407823 wrapping com.mysql.cj.jdbc.Conn
 ==> Parameters: e3(String)
 <==    Updates: 1 // 逻辑删除本质进行的是更新操作
 ```
-之后进行查询被逻辑删除的数据
+之后查询被逻辑删除的数据
 ```
  // 测试查询
     @Test
