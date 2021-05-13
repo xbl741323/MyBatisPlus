@@ -377,6 +377,7 @@ public class MyBatisPlusConfig {
 }
 ```
 4. 测试乐观锁（在测试类中进行测试）
+##### 测试乐观锁成功
 ```
  // 测试乐观锁成功
     @Test
@@ -410,4 +411,42 @@ JDBC Connection [HikariProxyConnection@278986288 wrapping com.mysql.cj.jdbc.Conn
 ==> Parameters: 小白(String), 10(Integer), 14s.com(String), 2(Integer), 2021-05-13 09:56:58.611(Timestamp), 45(Long), 1(Integer)
 <==    Updates: 1
 Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6ede46f6]
+```
+##### 测试乐观锁失败
+```
+// 测试乐观锁失败,多线程如下
+    @Test
+    public void testLockFail(){
+        // 线程1
+        User user = userMapper.selectById(45);
+        user.setName("小白122");
+        user.setAge(10);
+
+        // 模拟另外一个线程执行了插队操作
+        User user2 = userMapper.selectById(45);
+        user2.setName("小白22333");
+        user2.setAge(10);
+        userMapper.updateById(user2);
+
+        userMapper.updateById(user); // 如果没有乐观锁就会覆盖插队线程的值
+    }
+```
+测试结果如下：
+```
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@216e0771] was not registered for synchronization because synchronization is not active
+2021-05-13 10:10:36.073  INFO 15436 --- [           main] com.xu.handler.MyMetaObjectHandler       : 开始更新填充......
+JDBC Connection [HikariProxyConnection@1905280105 wrapping com.mysql.cj.jdbc.ConnectionImpl@5cbe2654] will not be managed by Spring
+==>  Preparing: UPDATE user SET name=?, age=?, email=?, version=?, update_time=? WHERE id=? AND version=?
+==> Parameters: 小白22333(String), 10(Integer), 14s.com(String), 3(Integer), 2021-05-13 10:10:36.073(Timestamp), 45(Long), 2(Integer)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@216e0771]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@fab35b1] was not registered for synchronization because synchronization is not active
+2021-05-13 10:10:36.082  INFO 15436 --- [           main] com.xu.handler.MyMetaObjectHandler       : 开始更新填充......
+JDBC Connection [HikariProxyConnection@1778994610 wrapping com.mysql.cj.jdbc.ConnectionImpl@5cbe2654] will not be managed by Spring
+==>  Preparing: UPDATE user SET name=?, age=?, email=?, version=?, update_time=? WHERE id=? AND version=?
+==> Parameters: 小白122(String), 10(Integer), 14s.com(String), 3(Integer), 2021-05-13 10:10:36.082(Timestamp), 45(Long), 2(Integer)
+<==    Updates: 0 //注意这里并没有执行更新操作（乐观锁阻止了本次操作）
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@fab35b1]
 ```
