@@ -345,3 +345,59 @@ where id = 2 and version  = 1
 
 ##### 测试一下MP的乐观锁插件
 1. 给数据库中添加version字段
+2. 对应实体类加上version字段并加上@Version注解
+```
+@Version //乐观锁的Version注解
+    private Integer version;
+```
+3. 注册组件
+```
+package com.xu.config;
+
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+//扫描我们的mapper文件夹
+@MapperScan("com.xu.mapper") // 测试乐观锁移到了这，原先在主启动器上面
+@EnableTransactionManagement //开启事务
+@Configuration //代表是一个配置类
+public class MyBatisPlusConfig {
+
+    // 注册乐观锁插件（新版，旧版已弃用）
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+        return interceptor;
+    }
+}
+```
+4. 测试乐观锁（在测试类中进行测试）
+```
+ // 测试乐观锁成功
+    @Test
+    public void testLockSuccess(){
+
+        //1、查询用户信息
+        User user = userMapper.selectById(45);
+        //2、修改用户信息
+        user.setName("小白");
+        user.setAge(10);
+        //3、执行更新操作
+        userMapper.updateById(user);
+    }
+```
+测试结果如下：
+```
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6ede46f6] was not registered for synchronization because synchronization is not active
+2021-05-13 09:56:58.611  INFO 18852 --- [           main] com.xu.handler.MyMetaObjectHandler       : 开始更新填充......
+JDBC Connection [HikariProxyConnection@278986288 wrapping com.mysql.cj.jdbc.ConnectionImpl@1894e40d] will not be managed by Spring
+==>  Preparing: UPDATE user SET name=?, age=?, email=?, version=?, update_time=? WHERE id=? AND version=?
+==> Parameters: 小白(String), 10(Integer), 14s.com(String), 2(Integer), 2021-05-13 09:56:58.611(Timestamp), 45(Long), 1(Integer)
+<==    Updates: 1
+```
