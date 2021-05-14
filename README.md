@@ -318,3 +318,345 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 }
 ```
 4、测试插入、测试更新、观察时间即可！
+
+#### 乐观锁
+在面试过程中，我们经常会被问到乐观锁，悲观锁！这个其实很简单
+```
+乐观锁：顾名思义十分乐观，它总是认为不会出现问题，无论干什么都不去上锁！如果出现了问题，就再次更新值测试！
+悲观锁：顾名思义十分悲观，它总是认为会出现问题，无论干什么都去上锁！再去操作！
+```
+这里我们主要讲解乐观锁机制！
+
+##### 乐观锁实现方式：
++ 去除记录时，获取当前version
++ 更新时，带上这个version
++ 执行更新时，set version = newVersion where version = oldVersion
++ 如果version不对，就更新失败
+```
+乐观锁：1、先查询，获得版本号 version = 1
+--A
+update user set name = "xu",version = version + 1
+where id = 2 and version  = 1
+
+--B 线程抢先完成，这个时候 version = 2,会导致 A 修改失败！
+update user set name = "xu",version = version + 1
+where id = 2 and version  = 1
+```
+
+##### 测试一下MP的乐观锁插件
+1. 给数据库中添加version字段
+2. 对应实体类加上version字段并加上@Version注解
+```
+@Version //乐观锁的Version注解
+    private Integer version;
+```
+3. 注册组件
+```
+package com.xu.config;
+
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+//扫描我们的mapper文件夹
+@MapperScan("com.xu.mapper") // 测试乐观锁移到了这，原先在主启动器上面
+@EnableTransactionManagement //开启事务
+@Configuration //代表是一个配置类
+public class MyBatisPlusConfig {
+
+    // 注册乐观锁插件（新版，旧版已弃用）
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+        return interceptor;
+    }
+}
+```
+4. 测试乐观锁（在测试类中进行测试）
+##### 测试乐观锁成功
+```
+ // 测试乐观锁成功
+    @Test
+    public void testLockSuccess(){
+
+        //1、查询用户信息
+        User user = userMapper.selectById(45);
+        //2、修改用户信息
+        user.setName("小白");
+        user.setAge(10);
+        //3、执行更新操作
+        userMapper.updateById(user);
+    }
+```
+测试结果如下：
+```
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@508a65bf] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@401792389 wrapping com.mysql.cj.jdbc.ConnectionImpl@1894e40d] will not be managed by Spring
+==>  Preparing: SELECT id,name,age,email,version,create_time,update_time FROM user WHERE id=?
+==> Parameters: 45(Integer)
+<==    Columns: id, name, age, email, version, create_time, update_time
+<==        Row: 45, e手动, 18, 14s.com, 1, null, 2021-05-12 18:36:18
+<==      Total: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@508a65bf]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6ede46f6] was not registered for synchronization because synchronization is not active
+2021-05-13 09:56:58.611  INFO 18852 --- [           main] com.xu.handler.MyMetaObjectHandler       : 开始更新填充......
+JDBC Connection [HikariProxyConnection@278986288 wrapping com.mysql.cj.jdbc.ConnectionImpl@1894e40d] will not be managed by Spring
+==>  Preparing: UPDATE user SET name=?, age=?, email=?, version=?, update_time=? WHERE id=? AND version=?
+==> Parameters: 小白(String), 10(Integer), 14s.com(String), 2(Integer), 2021-05-13 09:56:58.611(Timestamp), 45(Long), 1(Integer)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@6ede46f6]
+```
+##### 测试乐观锁失败
+```
+// 测试乐观锁失败,多线程如下
+    @Test
+    public void testLockFail(){
+        // 线程1
+        User user = userMapper.selectById(45);
+        user.setName("小白122");
+        user.setAge(10);
+
+        // 模拟另外一个线程执行了插队操作
+        User user2 = userMapper.selectById(45);
+        user2.setName("小白22333");
+        user2.setAge(10);
+        userMapper.updateById(user2);
+        
+        // 可以用自旋锁来多次尝试提交
+        userMapper.updateById(user); // 如果没有乐观锁就会覆盖插队线程的值
+    }
+```
+测试结果如下：
+```
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@216e0771] was not registered for synchronization because synchronization is not active
+2021-05-13 10:10:36.073  INFO 15436 --- [           main] com.xu.handler.MyMetaObjectHandler       : 开始更新填充......
+JDBC Connection [HikariProxyConnection@1905280105 wrapping com.mysql.cj.jdbc.ConnectionImpl@5cbe2654] will not be managed by Spring
+==>  Preparing: UPDATE user SET name=?, age=?, email=?, version=?, update_time=? WHERE id=? AND version=?
+==> Parameters: 小白22333(String), 10(Integer), 14s.com(String), 3(Integer), 2021-05-13 10:10:36.073(Timestamp), 45(Long), 2(Integer)
+<==    Updates: 1
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@216e0771]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@fab35b1] was not registered for synchronization because synchronization is not active
+2021-05-13 10:10:36.082  INFO 15436 --- [           main] com.xu.handler.MyMetaObjectHandler       : 开始更新填充......
+JDBC Connection [HikariProxyConnection@1778994610 wrapping com.mysql.cj.jdbc.ConnectionImpl@5cbe2654] will not be managed by Spring
+==>  Preparing: UPDATE user SET name=?, age=?, email=?, version=?, update_time=? WHERE id=? AND version=?
+==> Parameters: 小白122(String), 10(Integer), 14s.com(String), 3(Integer), 2021-05-13 10:10:36.082(Timestamp), 45(Long), 2(Integer)
+<==    Updates: 0 //注意这里并没有执行更新操作（乐观锁阻止了本次操作）
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@fab35b1]
+```
+
+#### 三、SELECT(查询操作)
+```
+    // 测试按照id查询
+    @Test
+    public void testSelectById(){
+        User user = userMapper.selectById(45);
+        System.out.println(user);
+    }
+
+    // 测试批量查询
+    @Test
+    public void testSelectBatchId(){
+        List<User> users = userMapper.selectBatchIds(Arrays.asList(1,2,3));
+        System.out.println(users);
+    }
+
+    // 按条件查询之一使用map操作
+    @Test
+    public void testSelectBatchIds(){
+        HashMap<String,Object> map = new HashMap<>();
+        // 自定义查询
+        map.put("name","小白22333");
+        List<User> users = userMapper.selectByMap(map);
+        System.out.println(users);
+    }
+```
+#### 分页查询
+分页网站使用的十分之多！
+1. 原始的limit进行分页
+2. pageHelper第三方插件
+3. MP其实也内置了分页插件
+```
+如何使用？步骤如下：
+1、配置分页插件
+@Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor()); // 注册乐观锁插件
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.H2)); // 注册分页插件
+        return interceptor;
+    }
+2、直接使用
+// 测试分页查询
+    @Test
+    public void testPageSelect(){
+        // current:当前页 size:页面大小
+        Page<User> page = new Page<>(1,10);
+        userMapper.selectPage(page,null);
+        System.out.println(page.getRecords());
+    }
+```
+测试结果如下：
+```
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2776015d] was not registered for synchronization because synchronization is not active
+2021-05-13 11:06:49.752  INFO 7840 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Starting...
+2021-05-13 11:06:49.962  INFO 7840 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Start completed.
+JDBC Connection [HikariProxyConnection@1407986024 wrapping com.mysql.cj.jdbc.ConnectionImpl@58ff8d79] will not be managed by Spring
+==>  Preparing: SELECT COUNT(*) FROM user
+==> Parameters: 
+<==    Columns: COUNT(*)
+<==        Row: 15
+<==      Total: 1
+==>  Preparing: SELECT id,name,age,email,version,create_time,update_time FROM user LIMIT ?
+==> Parameters: 10(Long)
+<==    Columns: id, name, age, email, version, create_time, update_time
+<==        Row: 1, Jone, 18, test1@baomidou.com, 1, null, null
+<==        Row: 2, Jack, 20, test2@baomidou.com, 1, null, null
+<==        Row: 3, Tom, 28, test3@baomidou.com, 1, null, null
+<==        Row: 4, Sandy, 21, test4@baomidou.com, 1, null, null
+<==        Row: 5, Billie, 24, test5@baomidou.com, 1, null, null
+<==        Row: 12, 2, 23, 123@323.com, 1, null, null
+<==        Row: 23, e, 23, 121@12.com, 1, null, null
+<==        Row: 42, e, 24, 14s.com, 1, null, null
+<==        Row: 45, 小白22333, 10, 14s.com, 3, null, 2021-05-13 10:10:36
+<==        Row: 46, e, 14, 14s.com, 1, null, null
+<==      Total: 10
+```
+
+#### 四、DELETE(删除操作)
+```
+// 测试删除
+    @Test
+    public void testDelete(){
+        userMapper.deleteById(2); // 根据 id 删除单个数据
+        userMapper.deleteBatchIds(Arrays.asList(1,3)); //根据 id 删除多个数据
+
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("name","2");
+        userMapper.deleteByMap(map); // 按条件删除数据
+    }
+```
+
+工作中，我们会遇到一些问题，逻辑删除！
+#### 逻辑删除
+```
+物理删除：从数据库中直接移除
+逻辑删除：在数据库中没有被移除，而是通过一个变量来让它失效！deleted=0 => deleted=1
+```
+管理员可以查看被删除的记录，防止数据的丢失，相当于回收站！
+
+#### 测试如下：
+1. 在数据库中添加deleted字段 默认值设置为0
+2. 在实体类中添加deleted字段，并添加@TableLogic注解
+```
+ @TableLogic // 逻辑删除注解
+    private Integer deleted;
+```
+3. 配置（@Bean相关配置高版本后已经不需要了）,application.yml中配置如下
+```
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: flag  # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+```
+4. 测试一下删除！
+```
+ // 测试删除
+    @Test
+    public void testDelete(){
+        userMapper.deleteById(4); //根据id删除单个数据
+        userMapper.deleteBatchIds(Arrays.asList(1,3)); //根据id删除多个数据
+
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("name","e3");
+        userMapper.deleteByMap(map); // 按条件删除数据
+    }
+```
+输出日志如下：
+```
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5b275174] was not registered for synchronization because synchronization is not active
+2021-05-13 14:38:14.714  INFO 20120 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Starting...
+2021-05-13 14:38:14.955  INFO 20120 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Start completed.
+JDBC Connection [HikariProxyConnection@1825903149 wrapping com.mysql.cj.jdbc.ConnectionImpl@2c7a8af2] will not be managed by Spring
+==>  Preparing: UPDATE user SET deleted=1 WHERE id=? AND deleted=0
+==> Parameters: 4(Integer)
+<==    Updates: 1 // 逻辑删除本质进行的是更新操作
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@5b275174]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2b2f5fcf] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@1687702287 wrapping com.mysql.cj.jdbc.ConnectionImpl@2c7a8af2] will not be managed by Spring
+==>  Preparing: UPDATE user SET deleted=1 WHERE id IN ( ? , ? ) AND deleted=0
+==> Parameters: 1(Integer), 3(Integer)
+<==    Updates: 0 // 逻辑删除本质进行的是更新操作
+Closing non transactional SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@2b2f5fcf]
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@53ec2968] was not registered for synchronization because synchronization is not active
+JDBC Connection [HikariProxyConnection@512407823 wrapping com.mysql.cj.jdbc.ConnectionImpl@2c7a8af2] will not be managed by Spring
+==>  Preparing: UPDATE user SET deleted=1 WHERE name = ? AND deleted=0
+==> Parameters: e3(String)
+<==    Updates: 1 // 逻辑删除本质进行的是更新操作
+```
+之后查询被逻辑删除的数据
+```
+ // 测试查询
+    @Test
+    public void testSelectById(){
+        User user = userMapper.selectById(4);
+        System.out.println(user);
+    }
+```
+输出日志如下：
+```
+Creating a new SqlSession
+SqlSession [org.apache.ibatis.session.defaults.DefaultSqlSession@61dde151] was not registered for synchronization because synchronization is not active
+2021-05-13 14:44:10.735  INFO 25160 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Starting...
+2021-05-13 14:44:11.005  INFO 25160 --- [           main] com.zaxxer.hikari.HikariDataSource       : study_db - Start completed.
+JDBC Connection [HikariProxyConnection@278536229 wrapping com.mysql.cj.jdbc.ConnectionImpl@2241f05b] will not be managed by Spring
+==>  Preparing: SELECT id,name,age,email,version,deleted,create_time,update_time FROM user WHERE id=? AND deleted=0
+==> Parameters: 4(Integer)
+<==      Total: 0  // 没有查询到结果
+```
+
+### 以上所有的CRUD及其扩展操作，我们都必须精通掌握，会大大提高工作效率！
+
+### 条件构造器
+十分重要：Wrapper 我们写一些复杂的sql可以用它来替代！
+1. 测试1
+```
+@Test
+    public void wrapperSelect(){
+        // 查询name不为空，邮箱不为空，年龄大于等于12的用户
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.isNotNull("name")
+               .isNotNull("email")
+               .ge("age",12);
+        List<User> users = userMapper.selectList(wrapper);
+        System.out.println(users);
+    }
+```
+2. 测试2
+```
+ @Test
+    public void wrapperSelectByName(){
+        // 根据name查询一条用户
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("name","小白22333");
+        User user = userMapper.selectOne(wrapper);
+        System.out.println(user);
+    }
+```
+
+### 代码自动生成器（待补充）
+
+
