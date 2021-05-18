@@ -656,6 +656,29 @@ JDBC Connection [HikariProxyConnection@278536229 wrapping com.mysql.cj.jdbc.Conn
         System.out.println(user);
     }
 ```
+3. 测试3
+```
+  @Test
+    public void wrapperSelectFilter(){
+        // 查询年龄在10到25之间的用户
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.between("age",10,25);
+        List<User> users = userMapper.selectList(wrapper);
+        System.out.println(users);
+
+    }
+```
+4. 测试4
+```
+ @Test
+    public void selectBySql(){
+        // 通过sql语句查询
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.inSql("age","select age from user where age < 30");
+        List<User> users = userMapper.selectList(wrapper);
+        System.out.println(users);
+    }
+```
 
 ### 代码自动生成器（待补充）
 
